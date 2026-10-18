@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biblioteca de Anuar Maximiliano</title>
+<meta name="description" content="Artículos de temas culturales escritos por Anuar Maximiliano a partir de sus lecturas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23c8102e'/%3E%3Ccircle cx='50' cy='50' r='36' fill='%23fff'/%3E%3Ccircle cx='50' cy='50' r='25' fill='%23c8102e'/%3E%3Ccircle cx='50' cy='50' r='15' fill='%23163b8c'/%3E%3Cpolygon points='50,37 53.5,46 63,46 55.5,52 58.5,61 50,55.5 41.5,61 44.5,52 37,46 46.5,46' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #070b1a;
+    --panel: rgba(12, 18, 40, 0.86);
+    --panel-solid: #0f1631;
+    --line: rgba(255, 255, 255, 0.14);
+    --text: #f3f5ff;
+    --muted: #aab3d6;
+    --red: #e23636;
+    --gold: #f5c518;
+    --blue: #2f6fed;
+    --cyan: #5ee7ff;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Nunito", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---------- Fondo de héroes ---------- */
+  #fondo {
+    position: fixed; inset: 0; z-index: -2;
+    width: 100%; height: 100%;
+  }
+  #foto-fondo {
+    position: fixed; inset: 0; z-index: -2;
+    background: center / cover no-repeat;
+    opacity: 0; transition: opacity .6s;
+  }
+  #foto-fondo.visible { opacity: 1; }
+  .velo {
+    position: fixed; inset: 0; z-index: -1;
+    background: radial-gradient(ellipse at 50% 20%, rgba(7,11,26,.35), rgba(7,11,26,.82) 70%);
+  }
+
+  /* ---------- Encabezado ---------- */
+  header {
+    text-align: center;
+    padding: 48px 16px 24px;
+  }
+  .sello {
+    display: inline-block;
+    font-family: "Bangers", cursive;
+    letter-spacing: 2px;
+    background: var(--red);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 6px;
+    transform: rotate(-2deg);
+    box-shadow: 4px 4px 0 #000;
+    font-size: 18px;
+  }
+  h1 {
+    font-family: "Bangers", cursive;
+    font-weight: 400;
+    font-size: clamp(42px, 9vw, 92px);
+    line-height: 1;
+    margin: 18px 0 8px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-shadow: 3px 3px 0 #b3001b, 6px 6px 0 #000;
+  }
+  .lema { color: var(--muted); font-size: 19px; margin: 0; }
+  .rango {
+    margin: 18px auto 0;
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-weight: 800;
+  }
+  .rango b { color: var(--gold); }
+
+  /* ---------- Barra de filtros ---------- */
+  main { max-width: 1100px; margin: 0 auto; padding: 0 16px 140px; }
+  .barra {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px;
+    margin-bottom: 22px;
+    backdrop-filter: blur(6px);
+  }
+  .barra input {
+    flex: 1 1 220px; min-width: 0;
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font: inherit;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font: inherit; font-size: 14px; font-weight: 700;
+    cursor: pointer;
+  }
+  .chip.activo { background: var(--gold); color: #111; border-color: var(--gold); }
+
+  /* ---------- Tarjetas ---------- */
+  .rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .tarjeta {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    text-align: left;
+    color: inherit; font: inherit;
+    transition: transform .15s, border-color .15s;
+    backdrop-filter: blur(6px);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .tarjeta:hover, .tarjeta:focus-visible { transform: translateY(-4px); border-color: var(--gold); outline: none; }
+  .tarjeta h2 { margin: 0; font-size: 21px; line-height: 1.25; }
+  .tarjeta p { margin: 0; color: var(--muted); font-size: 15px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+  .tema {
+    background: var(--blue); color: #fff;
+    border-radius: 6px; padding: 2px 8px; font-weight: 800; font-size: 12px;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .vacio, .aviso {
+    background: var(--panel);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  /* ---------- Vista de artículo ---------- */
+  .articulo {
+    background: var(--panel-solid);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: clamp(20px, 5vw, 48px);
+    max-width: 780px; margin: 0 auto;
+  }
+  .articulo h1 { font-size: clamp(34px, 6vw, 56px); text-align: left; margin-top: 8px; }
+  .articulo .cuerpo img { max-width: 100%; border-radius: 12px; }
+  .articulo .cuerpo h2, .articulo .cuerpo h3 { color: var(--gold); }
+  .articulo .cuerpo a { color: var(--cyan); }
+  .articulo .cuerpo blockquote {
+    margin: 16px 0; padding: 8px 16px;
+    border-left: 4px solid var(--red);
+    background: rgba(255,255,255,.04);
+  }
+  .volver {
+    background: none; border: 0; color: var(--cyan);
+    font: inherit; font-weight: 800; cursor: pointer; padding: 0; margin-bottom: 12px;
+  }
+  .fuente { color: var(--muted); font-style: italic; }
+
+  /* ---------- Botón de subir ---------- */
+  .subir {
+    position: fixed; right: 20px; bottom: 20px; z-index: 5;
+    display: flex; align-items: center; gap: 10px;
+    background: var(--red); color: #fff;
+    border: 3px solid #fff;
+    border-radius: 999px;
+    padding: 10px 20px 10px 12px;
+    font-family: "Bangers", cursive; font-size: 22px; letter-spacing: 1.5px;
+    box-shadow: 5px 5px 0 #000;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .subir:hover { transform: scale(1.06) rotate(-2deg); }
+  .subir svg { width: 38px; height: 38px; }
+
+  /* ---------- Ventana para escribir ---------- */
+  dialog {
+    width: min(760px, calc(100% - 24px));
+    max-height: calc(100vh - 24px);
+    border: 2px solid var(--gold);
+    border-radius: var(--radius);
+    background: var(--panel-solid);
+    color: var(--text);
+    padding: 0;
+  }
+  dialog::backdrop { background: rgba(0,0,0,.7); }
+  .dlg-cab {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 20px; border-bottom: 1px solid var(--line);
+  }
+  .dlg-cab h2 { margin: 0; font-family: "Bangers", cursive; font-weight: 400; letter-spacing: 1.5px; font-size: 28px; color: var(--gold); }
+  .cerrar { background: none; border: 0; color: var(--muted); font-size: 28px; cursor: pointer; line-height: 1; }
+  form { padding: 16px 20px 20px; display: grid; gap: 14px; }
+  label { display: grid; gap: 4px; font-weight: 800; font-size: 15px; }
+  label small { font-weight: 400; color: var(--muted); }
+  .fila { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  form input, form select, form textarea {
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font: inherit; font-weight: 400;
+  }
+  form select option { background: var(--panel-solid); }
+  form textarea { min-height: 220px; resize: vertical; }
+  .acciones { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+  .btn {
+    border: 0; border-radius: 10px; padding: 11px 18px;
+    font: inherit; font-weight: 800; cursor: pointer;
+  }
+  .btn.prim { background: var(--gold); color: #111; }
+  .btn.sec { background: rgba(255,255,255,.1); color: var(--text); }
+  .pasos { margin: 0; padding-left: 20px; color: var(--muted); font-size: 14px; }
+  .vista-previa {
+    border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px;
+    background: rgba(255,255,255,.03); max-height: 320px; overflow: auto;
+  }
+
+  footer { text-align: center; color: var(--muted); font-size: 14px; padding: 0 16px 100px; }
+
+  @media (max-width: 560px) {
+    .fila { grid-template-columns: 1fr; }
+    .subir span { display: none; }
+    .subir { padding: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Fondo: ilustración original con los emblemas de los héroes -->
+<svg id="fondo" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <radialGradient id="cielo" cx="50%" cy="40%" r="75%">
+      <stop offset="0" stop-color="#1b2a6b"/>
+      <stop offset=".55" stop-color="#0b1233"/>
+      <stop offset="1" stop-color="#05070f"/>
+    </radialGradient>
+    <radialGradient id="brillo-reactor" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#e8fdff"/>
+      <stop offset=".35" stop-color="#5ee7ff"/>
+      <stop offset="1" stop-color="#5ee7ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e6e9f0"/>
+      <stop offset=".5" stop-color="#9aa3b5"/>
+      <stop offset="1" stop-color="#5c6577"/>
+    </linearGradient>
+    <filter id="resplandor" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#cielo)"/>
+
+  <!-- Estrellas -->
+  <g fill="#fff" opacity=".7">
+    <circle cx="120" cy="90" r="1.6"/><circle cx="260" cy="210" r="1.2"/><circle cx="420" cy="60" r="1.8"/>
+    <circle cx="610" cy="150" r="1.1"/><circle cx="760" cy="40" r="1.5"/><circle cx="905" cy="190" r="1.3"/>
+    <circle cx="1080" cy="80" r="1.7"/><circle cx="1240" cy="170" r="1.2"/><circle cx="1500" cy="60" r="1.6"/>
+    <circle cx="1560" cy="300" r="1.3"/><circle cx="80" cy="420" r="1.4"/><circle cx="330" cy="520" r="1.1"/>
+    <circle cx="700" cy="380" r="1.5"/><circle cx="980" cy="470" r="1.2"/><circle cx="1350" cy="430" r="1.6"/>
+    <circle cx="200" cy="760" r="1.3"/><circle cx="520" cy="900" r="1.6"/><circle cx="860" cy="820" r="1.2"/>
+    <circle cx="1180" cy="930" r="1.5"/><circle cx="1460" cy="820" r="1.3"/><circle cx="40" cy="960" r="1.2"/>
+  </g>
+
+  <!-- Telaraña (Spider-Man) en la esquina superior izquierda -->
+  <g stroke="#ffffff" stroke-opacity=".28" stroke-width="2" fill="none">
+    <path d="M0 0 L420 90 M0 0 L360 260 M0 0 L230 380 M0 0 L80 420"/>
+    <path d="M110 24 Q95 70 98 120 Q60 105 26 108"/>
+    <path d="M210 45 Q180 120 190 205 Q120 190 52 205"/>
+    <path d="M310 66 Q270 170 280 290 Q170 280 70 300"/>
+    <path d="M400 86 Q350 220 355 360 Q220 350 80 400"/>
+  </g>
+
+  <!-- Escudo del Capitán América -->
+  <g transform="translate(330 640) rotate(-12)">
+    <circle r="190" fill="#c8102e"/>
+    <circle r="150" fill="#f4f4f4"/>
+    <circle r="112" fill="#c8102e"/>
+    <circle r="74" fill="#163b8c"/>
+    <polygon fill="#f4f4f4" points="0,-66 15.5,-21.4 62.8,-20.4 25.1,8.2 38.8,53.4 0,26.4 -38.8,53.4 -25.1,8.2 -62.8,-20.4 -15.5,-21.4"/>
+    <circle r="190" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="6"/>
+    <ellipse cx="-60" cy="-110" rx="70" ry="22" fill="#fff" opacity=".18" transform="rotate(-30 -60 -110)"/>
+  </g>
+
+  <!-- Martillo de Thor con relámpagos -->
+  <g transform="translate(1210 600) rotate(28)">
+    <g stroke="#9fd8ff" stroke-width="5" fill="none" filter="url(#resplandor)" opacity=".9">
+      <path d="M-150 -170 L-110 -120 L-135 -110 L-80 -40"/>
+      <path d="M150 -160 L115 -110 L140 -100 L90 -30"/>
+      <path d="M-170 40 L-120 20 L-125 50 L-70 30"/>
+    </g>
+    <rect x="-18" y="0" width="36" height="300" rx="10" fill="#6b3f1f"/>
+    <g stroke="#3d220f" stroke-width="5">
+      <line x1="-18" y1="60" x2="18" y2="80"/><line x1="-18" y1="100" x2="18" y2="120"/>
+      <line x1="-18" y1="140" x2="18" y2="160"/><line x1="-18" y1="180" x2="18" y2="200"/>
+      <line x1="-18" y1="220" x2="18" y2="240"/>
+    </g>
+    <rect x="-24" y="290" width="48" height="26" rx="6" fill="url(#metal)"/>
+    <path d="M10 316 q30 40 0 70" stroke="#6b3f1f" stroke-width="8" fill="none"/>
+    <rect x="-140" y="-120" width="280" height="130" rx="14" fill="url(#metal)" stroke="#3a4152" stroke-width="5"/>
+    <rect x="-110" y="-95" width="220" height="80" rx="8" fill="none" stroke="#3a4152" stroke-width="4"/>
+    <rect x="-140" y="-120" width="280" height="30" rx="14" fill="#fff" opacity=".25"/>
+  </g>
+
+  <!-- Reactor de Iron Man -->
+  <g transform="translate(1300 230)">
+    <circle r="150" fill="url(#brillo-reactor)" opacity=".7"/>
+    <circle r="92" fill="#1a1f2e" stroke="#7d8597" stroke-width="10"/>
+    <g stroke="#5ee7ff" stroke-width="8" opacity=".9">
+      <line x1="0" y1="-80" x2="0" y2="-55"/><line x1="56" y1="-56" x2="39" y2="-39"/>
+      <line x1="80" y1="0" x2="55" y2="0"/><line x1="56" y1="56" x2="39" y2="39"/>
+      <line x1="0" y1="80" x2="0" y2="55"/><line x1="-56" y1="56" x2="-39" y2="39"/>
+      <line x1="-80" y1="0" x2="-55" y2="0"/><line x1="-56" y1="-56" x2="-39" y2="-39"/>
+    </g>
+    <circle r="44" fill="url(#brillo-reactor)" filter="url(#resplandor)"/>
+    <polygon points="0,-34 30,18 -30,18" fill="none" stroke="#e8fdff" stroke-width="5"/>
+  </g>
+
+  <!-- Golpe de Hulk -->
+  <g transform="translate(820 820)">
+    <polygon fill="#2e9e3a" points="0,-150 40,-70 130,-110 90,-30 170,0 90,35 130,115 40,75 0,150 -40,75 -130,115 -90,35 -170,0 -90,-30 -130,-110 -40,-70"/>
+    <polygon fill="#7ad048" points="0,-100 25,-48 85,-72 60,-20 112,0 60,24 85,76 25,50 0,100 -25,50 -85,76 -60,24 -112,0 -60,-20 -85,-72 -25,-48"/>
+    <text x="0" y="16" text-anchor="middle" font-family="Bangers, Impact, sans-serif" font-size="58" fill="#0d3b12" letter-spacing="2" transform="rotate(-8)">¡SMASH!</text>
+  </g>
+
+  <!-- Viuda Negra: reloj de arena rojo -->
+  <g transform="translate(130 250)">
+    <circle r="80" fill="#111" stroke="#e23636" stroke-width="6"/>
+    <polygon fill="#e23636" points="-38,-48 38,-48 6,0 38,48 -38,48 -6,0"/>
+  </g>
+
+  <!-- Ojo de Halcón: flechas cruzadas -->
+  <g stroke-linecap="round" transform="translate(620 300)">
+    <g transform="rotate(35)">
+      <line x1="-190" y1="0" x2="160" y2="0" stroke="#8a4fd8" stroke-width="9"/>
+      <polygon points="160,-20 205,0 160,20" fill="#c9b6ee"/>
+      <path d="M-190 0 l-30 -22 M-190 0 l-30 22 M-170 0 l-30 -22 M-170 0 l-30 22" stroke="#c9b6ee" stroke-width="7"/>
+    </g>
+    <g transform="rotate(-35)">
+      <line x1="-190" y1="0" x2="160" y2="0" stroke="#8a4fd8" stroke-width="9"/>
+      <polygon points="160,-20 205,0 160,20" fill="#c9b6ee"/>
+      <path d="M-190 0 l-30 -22 M-190 0 l-30 22 M-170 0 l-30 -22 M-170 0 l-30 22" stroke="#c9b6ee" stroke-width="7"/>
+    </g>
+  </g>
+
+  <!-- Pantera Negra: zarpazos -->
+  <g fill="none" stroke="#b07cff" stroke-width="16" stroke-linecap="round" filter="url(#resplandor)" opacity=".85" transform="translate(1480 860)">
+    <path d="M-120 -120 Q-60 -40 -20 60"/>
+    <path d="M-70 -140 Q-10 -60 30 40"/>
+    <path d="M-20 -160 Q40 -80 80 20"/>
+  </g>
+
+  <!-- Gemas del infinito -->
+  <g filter="url(#resplandor)">
+    <circle cx="930" cy="110" r="14" fill="#3d7bff"/>
+    <circle cx="1000" cy="140" r="14" fill="#ff3b3b"/>
+    <circle cx="1070" cy="120" r="14" fill="#b04dff"/>
+    <circle cx="1140" cy="150" r="14" fill="#ffd23d"/>
+    <circle cx="1210" cy="120" r="14" fill="#ff8c1a"/>
+    <circle cx="1040" cy="200" r="14" fill="#2bd96b"/>
+  </g>
+</svg>
+<div id="foto-fondo"></div>
+<div class="velo"></div>
+
+<header>
+  <span class="sello">Cuartel de lectura</span>
+  <h1>Anuar Maximiliano</h1>
+  <p class="lema">Artículos de cultura sobre lo que voy leyendo</p>
+  <div class="rango" id="rango" hidden></div>
+</header>
+
+<main id="app"></main>
+
+<footer>Hecho con ❤️ por Anuar Maximiliano · Fondo: ilustración original inspirada en los Vengadores</footer>
+
+<button class="subir" id="btn-subir" type="button" aria-label="Subir un artículo">
+  <svg viewBox="0 0 48 48" aria-hidden="true">
+    <circle cx="24" cy="24" r="23" fill="#fff"/>
+    <path d="M14 31a7 7 0 0 1 1.2-13.9A10 10 0 0 1 34 19a6 6 0 0 1 0 12" fill="none" stroke="#e23636" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M24 37V23m-6 6 6-6 6 6" fill="none" stroke="#163b8c" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span>Subir artículo</span>
+</button>
+
+<dialog id="dlg">
+  <div class="dlg-cab">
+    <h2>Nuevo artículo</h2>
+    <button class="cerrar" type="button" id="btn-cerrar" aria-label="Cerrar">×</button>
+  </div>
+  <form id="form" autocomplete="off">
+    <label>Título
+      <input name="titulo" required maxlength="120" placeholder="Ej.: Los secretos de las pirámides de Egipto">
+    </label>
+    <div class="fila">
+      <label>Tema
+        <select name="tema" required>
+          <option>Historia</option><option>Ciencia</option><option>Libros</option>
+          <option>Arte</option><option>Música</option><option>Cine</option>
+          <option>Geografía</option><option>Mitología</option><option>Tecnología</option>
+          <option>Deportes</option><option>Otro</option>
+        </select>
+      </label>
+      <label>Fecha
+        <input name="fecha" type="date" required>
+      </label>
+    </div>
+    <label>¿Qué leí? <small>libro, revista o página, con su autor</small>
+      <input name="fuente" maxlength="200" placeholder="Ej.: «El mundo de Sofía», Jostein Gaarder">
+    </label>
+    <label>Resumen corto <small>una o dos frases que aparecen en la portada</small>
+      <input name="resumen" maxlength="220" placeholder="Ej.: Cómo se construyeron las pirámides sin máquinas modernas.">
+    </label>
+    <label>Mi artículo <small>puedes usar **negrita**, *cursiva* y ## Subtítulos</small>
+      <textarea name="texto" required placeholder="Escribe aquí lo que aprendiste, lo que más te sorprendió y tu opinión..."></textarea>
+    </label>
+    <div id="previa" class="vista-previa" hidden></div>
+    <ol class="pasos">
+      <li>Pulsa <b>Publicar</b>: se abre GitHub con tu artículo ya escrito.</li>
+      <li>En GitHub pulsa el botón verde <b>Commit changes</b> y luego otra vez <b>Commit changes</b>.</li>
+      <li>En uno o dos minutos tu artículo aparece en esta página.</li>
+    </ol>
+    <div class="acciones">
+      <button class="btn sec" type="button" id="btn-previa">Vista previa</button>
+      <button class="btn prim" type="submit">Publicar</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script>
+  const DUENO = "anuar-science";
+  const REPO = "anuar-maximiliano";
+  const RAMA = "main";
+  const CARPETA = "articulos";
+
+  const app = document.getElementById("app");
+  const dlg = document.getElementById("dlg");
+  const form = document.getElementById("form");
+  let articulos = [];
+  let filtroTema = "Todos";
+  let busqueda = "";
+
+  // Foto de fondo opcional: si existe img/fondo.jpg se muestra sobre la ilustración.
+  (function () {
+    const img = new Image();
+    img.onload = () => {
+      const capa = document.getElementById("foto-fondo");
+      capa.style.backgroundImage = "url(img/fondo.jpg)";
+      capa.classList.add("visible");
+    };
+    img.src = "img/fondo.jpg";
+  })();
+
+  function hoy() {
+    const d = new Date();
+    const p = n => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function slug(s) {
+    return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60) || "articulo";
+  }
+
+  // Lee el encabezado "---" de cada archivo .md
+  function leerArticulo(nombre, md) {
+    const datos = { archivo: nombre, titulo: nombre.replace(/\.md$/, ""), tema: "Otro", fecha: nombre.slice(0, 10), fuente: "", resumen: "", texto: md };
+    const m = md.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
+    if (m) {
+      m[1].split("\n").forEach(linea => {
+        const i = linea.indexOf(":");
+        if (i > 0) {
+          const k = linea.slice(0, i).trim();
+          let v = linea.slice(i + 1).trim().replace(/^"(.*)"$/, "$1").replace(/\\"/g, '"');
+          datos[k] = v;
+        }
+      });
+      datos.texto = m[2];
+    }
+    return datos;
+  }
+
+  function renderMarkdown(md) {
+    const html = DOMPurify.sanitize(marked.parse(md));
+    const caja = document.createElement("div");
+    caja.innerHTML = html;
+    // Las imágenes subidas a articulos/img se escriben como img/foto.jpg
+    caja.querySelectorAll("img").forEach(im => {
+      const src = im.getAttribute("src") || "";
+      if (!/^(https?:|data:|\/)/.test(src)) im.src = CARPETA + "/" + src.replace(/^\.\//, "");
+    });
+    return caja.innerHTML;
+  }
+
+  function rango(n) {
+    const niveles = [[0, "Recluta lector"], [1, "Agente de S.H.I.E.L.D."], [5, "Vengador en entrenamiento"], [10, "Vengador"], [20, "Vengador legendario"], [40, "Guardián del conocimiento"]];
+    let r = niveles[0][1];
+    niveles.forEach(([min, nombre]) => { if (n >= min) r = nombre; });
+    const el = document.getElementById("rango");
+    el.hidden = false;
+    el.innerHTML = "📚 <span><b>" + n + "</b> " + (n === 1 ? "artículo" : "artículos") + "</span> · 🛡️ <span>" + r + "</span>";
+  }
+
+  async function cargar() {
+    app.innerHTML = '<div class="aviso">Cargando artículos…</div>';
+    try {
+      const r = await fetch("https://api.github.com/repos/" + DUENO + "/" + REPO + "/contents/" + CARPETA + "?ref=" + RAMA);
+      if (!r.ok) throw new Error("GitHub respondió " + r.status);
+      const lista = (await r.json()).filter(f => f.type === "file" && f.name.endsWith(".md"));
+      articulos = await Promise.all(lista.map(async f => {
+        const t = await (await fetch(f.download_url)).text();
+        return leerArticulo(f.name, t);
+      }));
+      articulos.sort((a, b) => (b.fecha + b.archivo).localeCompare(a.fecha + a.archivo));
+    } catch (e) {
+      app.innerHTML = '<div class="aviso">No pude cargar los artículos (' + esc(e.message) + '). Intenta de nuevo en unos minutos.</div>';
+      return;
+    }
+    rango(articulos.length);
+    mostrar();
+  }
+
+  function mostrar() {
+    const id = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
+    const a = articulos.find(x => x.archivo === id);
+    if (a) return mostrarArticulo(a);
+
+    const temas = ["Todos", ...new Set(articulos.map(x => x.tema))];
+    const q = busqueda.toLowerCase();
+    const visibles = articulos.filter(x =>
+      (filtroTema === "Todos" || x.tema === filtroTema) &&
+      (!q || (x.titulo + " " + x.resumen + " " + x.fuente + " " + x.texto).toLowerCase().includes(q)));
+
+    app.innerHTML =
+      '<div class="barra">' +
+        '<input id="buscar" type="search" placeholder="Buscar en mis artículos…" value="' + esc(busqueda) + '">' +
+        '<div class="chips">' + temas.map(t => '<button class="chip' + (t === filtroTema ? " activo" : "") + '" data-tema="' + esc(t) + '">' + esc(t) + '</button>').join("") + '</div>' +
+      '</div>' +
+      (visibles.length
+        ? '<div class="rejilla">' + visibles.map(x =>
+            '<button class="tarjeta" data-id="' + esc(x.archivo) + '">' +
+              '<div class="meta"><span class="tema">' + esc(x.tema) + '</span><span>' + esc(x.fecha) + '</span></div>' +
+              '<h2>' + esc(x.titulo) + '</h2>' +
+              (x.resumen ? '<p>' + esc(x.resumen) + '</p>' : "") +
+              (x.fuente ? '<p class="fuente">📖 ' + esc(x.fuente) + '</p>' : "") +
+            '</button>').join("") + '</div>'
+        : '<div class="vacio">' + (articulos.length ? "No hay artículos con ese filtro." : "Todavía no hay artículos. ¡Pulsa el botón rojo para subir el primero!") + '</div>');
+
+    const buscar = document.getElementById("buscar");
+    buscar.addEventListener("input", e => {
+      busqueda = e.target.value;
+      const pos = e.target.selectionStart;
+      mostrar();
+      const nuevo = document.getElementById("buscar");
+      nuevo.focus(); nuevo.setSelectionRange(pos, pos);
+    });
+    app.querySelectorAll(".chip").forEach(b => b.onclick = () => { filtroTema = b.dataset.tema; mostrar(); });
+    app.querySelectorAll(".tarjeta").forEach(b => b.onclick = () => { location.hash = "/" + encodeURIComponent(b.dataset.id); });
+  }
+
+  function mostrarArticulo(a) {
+    app.innerHTML =
+      '<article class="articulo">' +
+        '<button class="volver" id="volver">← Volver a todos los artículos</button>' +
+        '<div class="meta"><span class="tema">' + esc(a.tema) + '</span><span>' + esc(a.fecha) + '</span></div>' +
+        '<h1>' + esc(a.titulo) + '</h1>' +
+        (a.fuente ? '<p class="fuente">📖 Lo leí en: ' + esc(a.fuente) + '</p>' : "") +
+        '<div class="cuerpo">' + renderMarkdown(a.texto) + '</div>' +
+      '</article>';
+    document.getElementById("volver").onclick = () => { location.hash = ""; };
+    window.scrollTo(0, 0);
+  }
+
+  window.addEventListener("hashchange", mostrar);
+
+  // ---------- Escribir y publicar ----------
+  const BORRADOR = "borrador-articulo";
+
+  function guardarBorrador() {
+    try { localStorage.setItem(BORRADOR, JSON.stringify(Object.fromEntries(new FormData(form)))); } catch (e) {}
+  }
+  function recuperarBorrador() {
+    try {
+      const d = JSON.parse(localStorage.getItem(BORRADOR) || "null");
+      if (d) Object.entries(d).forEach(([k, v]) => { if (form.elements[k]) form.elements[k].value = v; });
+    } catch (e) {}
+    if (!form.elements.fecha.value) form.elements.fecha.value = hoy();
+  }
+
+  function comillas(s) { return '"' + String(s).replace(/"/g, '\\"').replace(/\n/g, " ") + '"'; }
+
+  function construirMarkdown(d) {
+    return "---\n" +
+      "titulo: " + comillas(d.titulo) + "\n" +
+      "tema: " + comillas(d.tema) + "\n" +
+      "fecha: " + d.fecha + "\n" +
+      "fuente: " + comillas(d.fuente || "") + "\n" +
+      "resumen: " + comillas(d.resumen || "") + "\n" +
+      "---\n\n" + d.texto.trim() + "\n";
+  }
+
+  document.getElementById("btn-subir").onclick = () => { recuperarBorrador(); dlg.showModal(); };
+  document.getElementById("btn-cerrar").onclick = () => dlg.close();
+  form.addEventListener("input", guardarBorrador);
+
+  document.getElementById("btn-previa").onclick = () => {
+    const caja = document.getElementById("previa");
+    const d = Object.fromEntries(new FormData(form));
+    caja.hidden = !caja.hidden;
+    if (!caja.hidden) caja.innerHTML = "<h2>" + esc(d.titulo || "Sin título") + "</h2>" + renderMarkdown(d.texto || "");
+  };
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(form));
+    const md = construirMarkdown(d);
+    const archivo = d.fecha + "-" + slug(d.titulo) + ".md";
+    const base = "https://github.com/" + DUENO + "/" + REPO + "/new/" + RAMA + "/" + CARPETA;
+    let url = base + "?filename=" + encodeURIComponent(archivo) + "&value=" + encodeURIComponent(md);
+    if (url.length > 7500) {
+      // Artículo muy largo para la dirección: se copia y se pega en GitHub.
+      try { await navigator.clipboard.writeText(md); } catch (err) {}
+      url = base + "?filename=" + encodeURIComponent(archivo);
+      document.querySelector(".pasos").insertAdjacentHTML("afterbegin",
+        '<li><b>Tu artículo es largo:</b> ya lo copié. En GitHub haz clic en el recuadro grande y pulsa <b>Ctrl + V</b>.</li>');
+    }
+    window.open(url, "_blank", "noopener");
+    try { localStorage.removeItem(BORRADOR); } catch (err) {}
+  });
+
+  cargar();
+</script>
+</body>
+</html>
